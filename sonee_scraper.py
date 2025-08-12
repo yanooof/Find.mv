@@ -1,21 +1,18 @@
+import time
+import sqlite3
+from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
-import time
-import mysql.connector
 
+DB_PATH = Path("product-finder/database/database.sqlite") 
 
+start_time = time.time()
 
 def scrape_sonee_paginated(max_empty_pages=3):
-    from selenium import webdriver
-    from selenium.webdriver.chrome.service import Service
-    from selenium.webdriver.common.by import By
-    from webdriver_manager.chrome import ChromeDriverManager
-    import time
-
     options = webdriver.ChromeOptions()
-    options.add_argument("--headless")  # Headless is fine now
+    options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
@@ -32,13 +29,12 @@ def scrape_sonee_paginated(max_empty_pages=3):
         time.sleep(2)
 
         products = driver.find_elements(By.XPATH, "//div[contains(@class, 'grid__item')]")
-        print(f"Found {len(products)} product blocks on page {page}")
+        print(f"📦 Found {len(products)} product blocks on page {page}")
 
         if len(products) < 10:
             empty_page_count += 1
-            print("Possible end of results")
         else:
-            empty_page_count = 0  # reset
+            empty_page_count = 0
 
         for p in products:
             try:
@@ -71,20 +67,15 @@ def scrape_sonee_paginated(max_empty_pages=3):
     return results
 
 
-def insert_into_mysql(products):
-    conn = mysql.connector.connect(
-        host="127.0.0.1",
-        user="root",
-        password="",
-        database="product_finder"
-    )
+def insert_into_sqlite(products):
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     for product in products:
         try:
             cursor.execute("""
                 INSERT INTO products (name, price, link, image, created_at, updated_at)
-                VALUES (%s, %s, %s, %s, NOW(), NOW())
+                VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))
             """, (
                 product['name'],
                 product['price'],
@@ -92,28 +83,28 @@ def insert_into_mysql(products):
                 product['image']
             ))
         except Exception as e:
-            print("Error inserting product:", e)
+            print(" Error inserting product:", e)
 
     conn.commit()
     cursor.close()
     conn.close()
-    print(f"Inserted {len(products)} products into MySQL")
+    print(f"\n Inserted {len(products)} products into SQLite")
 
 
 if __name__ == "__main__":
     data = scrape_sonee_paginated()
-    insert_into_mysql(data)
+    insert_into_sqlite(data)
     print(f"\n Total products scraped: {len(data)}")
 
-    start_time = time.time()
     end_time = time.time()
     elapsed = end_time - start_time
 
     if elapsed > 60:
         minutes = int(elapsed // 60)
         seconds = int(elapsed % 60)
-        print(f"\n Scraping completed in {minutes} minutes and {seconds} seconds")
+        print(f"\nScraping completed in {minutes} minutes and {seconds} seconds")
     else:
-        print(f"\n Scraping completed in {int(elapsed)} seconds")
+        print(f"\nScraping completed in {int(elapsed)} seconds")
+
 
 
