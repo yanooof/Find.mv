@@ -9,21 +9,28 @@ class ProductController extends Controller
 {
     public function index()
     {
-        return view('home');
+        return view('main-page');
     }
 
     public function search(Request $request)
     {
-        $query = $request->input('q');
+        $query = trim($request->input('q', ''));
+        $store = $request->input('store');
 
-        $products = Product::where('name', 'LIKE', '%' . $query . '%')
-            ->orWhere('price', 'LIKE', '%' . $query . '%')
-            ->paginate(20);
+        $products = Product::when($query !== '', fn ($q) =>
+                $q->where('name', 'like', "%{$query}%")
+            )
+            ->when($store, fn ($q) =>
+                $q->whereRaw('LOWER(store) = ?', [mb_strtolower($store)])
+            )
+            ->orderByDesc('updated_at')
+            ->paginate(20)
+            ->appends(['q' => $query, 'store' => $store]);
 
-        return view('search', [
-            'products' => $products,
-            'query' => $query
-        ]);
+        // Build chips from actual DB values to avoid typos
+        $stores = Product::select('store')->whereNotNull('store')->distinct()->orderBy('store')->pluck('store');
+
+        return view('search', compact('products', 'query', 'store', 'stores'));
     }
 }
 
