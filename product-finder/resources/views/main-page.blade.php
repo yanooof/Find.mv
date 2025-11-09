@@ -40,6 +40,7 @@
             border: 1px solid #444;
             color: #fff;
             font-size: 1.2rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             border-radius: 50px;
             padding: 0.8rem 1.5rem;
         }

@@ -1,61 +1,98 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Find.mv
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Find.mv** is a Laravel-based web application that allows users in **Malé City, Maldives** to search for products across multiple local retail stores in one place.  
+It aggregates and displays up-to-date product information (name, price, store, and link to the original page) collected via custom Python web scrapers.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The aim of this project is to make local shopping more efficient by bridging the gap between online browsing and in-store availability.  
+Instead of visiting multiple local store websites, users can simply search once to find:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-   Which **stores** have the item in stock
+-   The **price** at each store
+-   A direct **link** to the store’s product page
 
-## Learning Laravel
+This saves time and improves visibility of local retail options.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Features
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+-   **Unified Search Interface**  
+    Google-style homepage with a single search bar.
 
-## Laravel Sponsors
+-   **Dark Themed UI**  
+    Modern dark mode with gradient background and accent highlights.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+-   **Real-Time Local Data**  
+    Product data scraped directly from multiple Maldivian stores, currently using data from:
 
-### Premium Partners
+    -   [Sonee Hardware](https://www.sonee.com.mv)
+    -   [Asters Online](https://www.astersonline.com)
+    -   [LinkServe Shop](https://shop.linkserve.mv)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+-   **Smart Price Normalization**  
+    All prices are standardized to `MVR` format for consistency.
 
-## Contributing
+-   **Store Filtering**  
+    Quickly narrow search results by selecting specific stores.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+-   **Paginated Results**  
+    Results are cleanly paginated for faster performance.
 
-## Code of Conduct
+-   **SQLite Integration**  
+    Lightweight database shared between the Laravel app and Python scrapers.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Technology Stack
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+| Layer               | Tools / Frameworks                                                 |
+| :------------------ | :----------------------------------------------------------------- |
+| **Frontend**        | Laravel Blade Components, TailwindCSS / Bootstrap-style custom CSS |
+| **Backend**         | Laravel 11 (PHP 8+)                                                |
+| **Scraping**        | Python 3.13, Selenium, WebDriverManager                            |
+| **Database**        | SQLite (replaces MySQL for simplicity)                             |
+| **Version Control** | Git + GitHub                                                       |
+| **Environment**     | Windows 10 / 11, Visual Studio Code                                |
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## System Workflow
+
+1. **Data Collection:**  
+   Python Selenium scripts crawl local e-commerce sites page by page or via “load more” interactions, collecting product name, price, image, and link.
+
+2. **Data Storage:**  
+   Each scraper inserts results into a shared SQLite database using `sqlite3`, keeping timestamps for freshness.
+
+3. **Data Presentation:**  
+   Laravel reads from the same database via Eloquent ORM and renders the results dynamically through reusable Blade components.
+
+---
+
+## ⚒️ Setup & Installation
+
+### 1. Clone the repository
+
+git clone https://github.com/yourusername/product-finder.git
+cd product-finder
+
+### 2. install php and laravel dependencies
+
+composer install
+cp .env.example .env
+php artisan key:generate
+
+### 3. Configure DB
+
+DB_CONNECTION=sqlite
+DB_DATABASE=database/db.sqlite
+
+### 4. Run the server
+
+php artisan serve
+
+Now open http://localhost:8000 to view the app.
