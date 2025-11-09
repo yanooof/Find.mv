@@ -16,7 +16,7 @@ def scrape_asters():
 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     url = "https://www.astersonline.com/collections/all"
-    print(f"\n🔍 Visiting: {url}")
+    print(f"\n Visiting: {url}")
     driver.get(url)
 
     # Keep clicking the 'Show more' button until it's gone or unclickable
@@ -27,19 +27,19 @@ def scrape_asters():
         try:
             show_more_btn = driver.find_element(By.CLASS_NAME, "snize-pagination-load-more")
             if show_more_btn.is_displayed() and show_more_btn.is_enabled():
-                print(f"🔁 Clicking 'Show more' button (click {click_count + 1})...")
+                print(f"Clicking 'Show more' button (click {click_count + 1})...")
                 driver.execute_script("arguments[0].click();", show_more_btn)
                 time.sleep(2)
                 click_count += 1
             else:
                 break
         except Exception:
-            print("✅ No more 'Show more' button or error occurred.")
+            print("No more 'Show more' button or error occurred.")
             break
 
     time.sleep(1)
     product_blocks = driver.find_elements(By.CSS_SELECTOR, "li.snize-product")
-    print(f"📦 Found {len(product_blocks)} product blocks")
+    print(f"Found {len(product_blocks)} product blocks")
 
     products = []
 
@@ -57,7 +57,7 @@ def scrape_asters():
                 "image": image
             })
         except Exception as e:
-            print("⚠️ Skipped product due to error:", e)
+            print("Skipped product due to error:", e)
 
     driver.quit()
     return products
@@ -80,25 +80,25 @@ def insert_into_sqlite(products):
             'Asters'
         ))
         except Exception as e:
-            print("⚠️ Error inserting product:", e)
+            print("Error inserting product:", e)
 
     conn.commit()
     cursor.close()
     conn.close()
-    print(f"✅ Inserted {len(products)} products into SQLite")
+    print(f"Inserted {len(products)} products into SQLite")
 
 
 if __name__ == "__main__":
     start_time = time.time()
     data = scrape_asters()
-    print(f"✅ Scraped {len(data)} products from Asters")
+    print(f"Scraped {len(data)} products from Asters")
     insert_into_sqlite(data)
 
     elapsed = time.time() - start_time
     if elapsed > 60:
-        print(f"\n⏱️ Done in {int(elapsed // 60)} minutes and {int(elapsed % 60)} seconds")
+        print(f"\nDone in {int(elapsed // 60)} minutes and {int(elapsed % 60)} seconds")
     else:
-        print(f"\n⏱️ Done in {int(elapsed)} seconds")
+        print(f"\nDone in {int(elapsed)} seconds")
 
 
 

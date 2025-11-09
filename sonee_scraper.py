@@ -24,12 +24,12 @@ def scrape_sonee_paginated(max_empty_pages=3):
 
     while empty_page_count < max_empty_pages:
         url = f"https://www.sonee.com.mv/collections/all?page={page}"
-        print(f"\n🔍 Visiting: {url}")
+        print(f"\nVisiting: {url}")
         driver.get(url)
         time.sleep(2)
 
         products = driver.find_elements(By.XPATH, "//div[contains(@class, 'grid__item')]")
-        print(f"📦 Found {len(products)} product blocks on page {page}")
+        print(f"Found {len(products)} product blocks on page {page}")
 
         if len(products) < 10:
             empty_page_count += 1

@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 BASE = "https://shop.linkserve.mv"
 LISTING = f"{BASE}/collections/all"
-DB_PATH = Path("product-finder/database/database.sqlite")  # adjust if needed
+DB_PATH = Path("product-finder/database/database.sqlite")
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
@@ -22,22 +22,21 @@ def scrape_linkserve(max_pages=9999, sleep_s=1.0):
         print(f"🔍 Visiting: {url}")
         r = requests.get(url, headers=HEADERS, timeout=30)
         if r.status_code != 200:
-            print(f"❌ HTTP {r.status_code} on page {page}. Stopping.")
+            print(f" HTTP {r.status_code} on page {page}. Stopping.")
             break
 
         soup = BeautifulSoup(r.text, "html.parser")
 
-        # Each product is in a div.product-item (don’t match the “1/3--tablet…” class; it has a slash)
+        # Each product is in a div.product-item so select from there
         items = soup.select("div.product-item")
-        print(f"📦 Found {len(items)} product blocks on page {page}")
+        print(f" Found {len(items)} product blocks on page {page}")
 
         if not items:
-            # no more pages
             break
 
         for it in items:
             try:
-                # Title + link
+                # title + link
                 a_title = it.select_one("a.product-item__title")
                 if not a_title:
                     # fallback to image link wrapper
@@ -49,7 +48,7 @@ def scrape_linkserve(max_pages=9999, sleep_s=1.0):
                 href = a_title.get("href", "")
                 link = urljoin(BASE, href)
 
-                # Price (handles "From Rf22" etc.)
+                # Price
                 price_el = it.select_one(".product-item__price-list .price")
                 price = price_el.get_text(strip=True) if price_el else ""
 
@@ -66,22 +65,19 @@ def scrape_linkserve(max_pages=9999, sleep_s=1.0):
                     "image": image
                 })
             except Exception as e:
-                print("⚠️ Skipped one item:", e)
+                print(" Skipped one item:", e)
 
         total += len(items)
         page += 1
         time.sleep(sleep_s)  # be polite
 
-    print(f"\n✅ Scraped {len(products)} products from LinkServe")
+    print(f"\n Scraped {len(products)} products from LinkServe")
     return products
 
 
 def insert_into_sqlite(rows):
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
-
-    # Optional: ensure a UNIQUE index on link to avoid dupes (run once)
-    # cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_products_link ON products(link);")
 
     inserted = 0
     for p in rows:
@@ -92,12 +88,12 @@ def insert_into_sqlite(rows):
             """, (p["name"], p["price"], p["link"], p["image"], "LinkServe"))
             inserted += cur.rowcount
         except Exception as e:
-            print("❌ Insert error:", e)
+            print(" Insert error:", e)
 
     conn.commit()
     cur.close()
     conn.close()
-    print(f"✅ Inserted {inserted} new rows into SQLite")
+    print(f" Inserted {inserted} new rows into SQLite")
 
 
 if __name__ == "__main__":
@@ -105,5 +101,5 @@ if __name__ == "__main__":
     data = scrape_linkserve()
     insert_into_sqlite(data)
     elapsed = time.time() - start
-    print(f"\n⏱️ Done in {int(elapsed//60)} min {int(elapsed%60)} sec" if elapsed > 60
-          else f"\n⏱️ Done in {int(elapsed)} sec")
+    print(f"\n Done in {int(elapsed//60)} min {int(elapsed%60)} sec" if elapsed > 60
+          else f"\n Done in {int(elapsed)} sec")
