@@ -24,10 +24,15 @@
         }
 
         .logo {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-            color: #ffcc00; /* Accent color for logo text */
+            font-size: 5rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, #ffcc00 0%, #ff9900 50%, #ffcc00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.25);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .search-box {
@@ -46,10 +51,10 @@
         }
 
         .btn-search {
-            margin-top: 1rem;
+            margin-top: 1.2rem;
             padding: 0.6rem 1.2rem;
             border-radius: 30px;
-            background-color: #ffcc00;
+            background: linear-gradient(90deg, #ffcc00 0%, #ff9900 50%, #ffcc00 100%);
             color: black;
             font-weight: bold;
             border: none;
@@ -63,7 +68,7 @@
 <body>
 
 <div class="search-container">
-    <div class="logo">Product Finder</div>
+    <div class="logo">FIND.MV</div>
     <form action="{{ route('search') }}" method="GET">
         <input type="text" name="q" class="form-control search-box" placeholder="Search for products...">
         <button type="submit" class="btn btn-search">Search</button>

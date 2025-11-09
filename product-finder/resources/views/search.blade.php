@@ -24,7 +24,7 @@
     .store{min-width:110px; text-align:center; color:var(--muted);}
     .price{min-width:140px; text-align:right; font-weight:700; color:var(--accent);}
     .visit-btn{min-width:130px;}
-    /* Center & theme pagination */
+    /*ADDING PAGINATION*/
     .pagination{justify-content:center;}
     .page-link{background:var(--panel); border:1px solid var(--border); color:#fff;}
     .page-link:hover{background:#2a2a2a;}
@@ -33,7 +33,6 @@
 </head>
 <body>
   <div class="container">
-    <!-- Sticky search header -->
     <div class="search-header position-sticky top-0" style="z-index:100;">
       <form action="{{ route('search') }}" method="GET" class="d-flex gap-2">
         <input type="text" name="q" class="form-control form-control-lg" value="{{ $query }}" placeholder="Search products..." autofocus>
@@ -41,7 +40,6 @@
       </form>
     </div>
 
-    <!-- Toolbar: result count + quick store filters -->
     <div class="toolbar">
       <div class="small text-muted">Showing {{ number_format($products->total()) }} results</div>
       <div class="d-flex gap-2 flex-wrap">
@@ -53,7 +51,6 @@
       </div>
     </div>
 
-    <!-- Results -->
     @forelse($products as $product)
       <div class="product-row">
         <img class="product-img"
@@ -70,9 +67,7 @@
       <div class="alert alert-dark border-0">No results found.</div>
     @endforelse
 
-    <!-- Pagination -->
     <div class="mt-3">
-      {{-- Use Bootstrap-5 pagination renderer --}}
       {{ $products->links('pagination::bootstrap-5') }}
     </div>
   </div>
