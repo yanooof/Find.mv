@@ -77,7 +77,7 @@ This saves time and improves visibility of local retail options.
 
 ### 1. Clone the repository
 
-git clone https://github.com/yourusername/product-finder.git
+git clone https://github.com/yanooof/product-finder-project.git
 cd product-finder
 
 ### 2. install php and laravel dependencies
